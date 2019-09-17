@@ -849,7 +849,7 @@ fd_screen_create(struct fd_device *dev, struct renderonly *ro)
 	struct pipe_screen *pscreen;
 	uint64_t val;
 
-	fd_mesa_debug = debug_get_option_fd_mesa_debug();
+	fd_mesa_debug = FD_DBG_MSGS; // debug_get_option_fd_mesa_debug();
 
 	if (fd_mesa_debug & FD_DBG_NOBIN)
 		fd_binning_enabled = false;

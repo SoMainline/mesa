@@ -57,7 +57,7 @@
 #endif /* HAVE_ANDROID_PLATFORM */
 
 #define MAXSTRING 1000
-#define FALLBACK_LOG_LEVEL _EGL_WARNING
+#define FALLBACK_LOG_LEVEL _EGL_DEBUG
 
 
 static struct {
@@ -149,8 +149,8 @@ _eglLog(EGLint level, const char *fmtStr, ...)
    /* one-time initialization; a little race here is fine */
    if (!logging.initialized)
       _eglInitLogger();
-   if (level > logging.level || level < 0)
-      return;
+   // if (level > logging.level || level < 0)
+   //    return;
 
    mtx_lock(&logging.mutex);
 

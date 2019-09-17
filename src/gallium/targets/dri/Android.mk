@@ -90,6 +90,10 @@ LOCAL_WHOLE_STATIC_LIBRARIES := \
 	libmesa_util \
 	libmesa_loader
 
+
+	#libc++_static \
+	libexpat
+
 # sort GALLIUM_SHARED_LIBS to remove any duplicates
 LOCAL_SHARED_LIBRARIES += $(sort $(GALLIUM_SHARED_LIBS))
 

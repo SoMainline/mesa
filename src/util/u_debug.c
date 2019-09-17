@@ -49,19 +49,20 @@
 void
 _debug_vprintf(const char *format, va_list ap)
 {
-   static char buf[4096] = {'\0'};
-#if DETECT_OS_WINDOWS || defined(EMBEDDED_DEVICE)
-   /* We buffer until we find a newline. */
-   size_t len = strlen(buf);
-   int ret = vsnprintf(buf + len, sizeof(buf) - len, format, ap);
-   if (ret > (int)(sizeof(buf) - len - 1) || strchr(buf + len, '\n')) {
-      os_log_message(buf);
-      buf[0] = '\0';
-   }
-#else
-   vsnprintf(buf, sizeof(buf), format, ap);
-   os_log_message(buf);
-#endif
+   __android_log_vprint(ANDROID_LOG_DEBUG, LOG_TAG, format, ap);
+//    static char buf[4096] = {'\0'};
+// #if DETECT_OS_WINDOWS || defined(EMBEDDED_DEVICE)
+//    /* We buffer until we find a newline. */
+//    size_t len = strlen(buf);
+//    int ret = vsnprintf(buf + len, sizeof(buf) - len, format, ap);
+//    if (ret > (int)(sizeof(buf) - len - 1) || strchr(buf + len, '\n')) {
+//       os_log_message(buf);
+//       buf[0] = '\0';
+//    }
+// #else
+//    vsnprintf(buf, sizeof(buf), format, ap);
+//    os_log_message(buf);
+// #endif
 }
 
 

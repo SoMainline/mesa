@@ -24,6 +24,9 @@
  *    Rob Clark <robclark@freedesktop.org>
  */
 
+#define LOG_TAG "fd5_draw"
+#include <log/log.h>
+
 #include "pipe/p_state.h"
 #include "util/u_string.h"
 #include "util/u_memory.h"
@@ -96,6 +99,9 @@ fd5_draw_vbo(struct fd_context *ctx, const struct pipe_draw_info *info,
              unsigned index_offset)
 {
 	struct fd5_context *fd5_ctx = fd5_context(ctx);
+
+	ALOGI("Entering %s", __func__);
+
 	struct fd5_emit emit = {
 		.debug = &ctx->debug,
 		.vtx  = &ctx->vtx,
@@ -168,6 +174,8 @@ fd5_draw_vbo(struct fd_context *ctx, const struct pipe_draw_info *info,
 	}
 
 	fd_context_all_clean(ctx);
+
+	ALOGI("Exiting %s", __func__);
 
 	return true;
 }
