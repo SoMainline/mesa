@@ -219,7 +219,7 @@ enum {
 };
 
 static void
-setup_stages(struct fd5_emit *emit, struct stage *s)
+setup_stages(struct fd_context *ctx, struct fd5_emit *emit, struct stage *s)
 {
 	unsigned i;
 
@@ -233,6 +233,15 @@ setup_stages(struct fd5_emit *emit, struct stage *s)
 			s[i].i = &s[i].v->info;
 			/* constlen is in units of 4 * vec4: */
 			assert(s[i].v->constlen % 4 == 0);
+
+			/* 
+			NOT SURE IF IT'S OKAY but:
+				(FS = 1)
+				508: HLSQ_FS_CONSTLEN = 2 & HLSQ_FS_INSTRLEN = 1
+				530: HLSQ_FS_CONSTLEN = 3 & HLSQ_FS_INSTRLEN = 4
+
+				zeros on both for HS/DS/GS/CS
+			*/
 			s[i].constlen = s[i].v->constlen / 4;
 			/* instrlen is already in units of 16 instr.. although
 			 * probably we should ditch that and not make the compiler
@@ -276,7 +285,7 @@ setup_stages(struct fd5_emit *emit, struct stage *s)
 	}
 
 	s[VS].instroff = 0;
-	s[FS].instroff = 64 - s[FS].instrlen;
+	s[FS].instroff = (64 + (ctx->screen->gpu_id == 508 ? 3 : 0) - s[FS].instrlen;
 	s[HS].instroff = s[DS].instroff = s[GS].instroff = s[FS].instroff;
 }
 
@@ -292,7 +301,7 @@ fd5_program_emit(struct fd_context *ctx, struct fd_ringbuffer *ring,
 	uint8_t psize_loc = ~0;
 	int i, j;
 
-	setup_stages(emit, s);
+	setup_stages(ctx, emit, s);
 
 	fssz = (s[FS].i->max_reg >= 24) ? TWO_QUADS : FOUR_QUADS;
 
@@ -506,7 +515,7 @@ fd5_program_emit(struct fd_context *ctx, struct fd_ringbuffer *ring,
 	OUT_RING(ring, A5XX_HLSQ_CONTROL_0_REG_FSTHREADSIZE(fssz) |
 			A5XX_HLSQ_CONTROL_0_REG_CSTHREADSIZE(TWO_QUADS) |
 			0x00000880);               /* XXX HLSQ_CONTROL_0 */
-	OUT_RING(ring, A5XX_HLSQ_CONTROL_1_REG_PRIMALLOCTHRESHOLD(63));
+	OUT_RING(ring, A5XX_HLSQ_CONTROL_1_REG_PRIMALLOCTHRESHOLD((ctx->screen->gpu_id == 508 ? 15 :63));
 	OUT_RING(ring, A5XX_HLSQ_CONTROL_2_REG_FACEREGID(face_regid) |
 			A5XX_HLSQ_CONTROL_2_REG_SAMPLEID(samp_id_regid) |
 			A5XX_HLSQ_CONTROL_2_REG_SAMPLEMASK(samp_mask_regid) |
@@ -569,6 +578,7 @@ fd5_program_emit(struct fd_context *ctx, struct fd_ringbuffer *ring,
 			COND(samp_id_regid != regid(63, 0),
 				A5XX_RB_RENDER_CONTROL1_SAMPLEID));
 
+	/* 508 has REGID=0 here, 530 has REGID=2 */
 	OUT_PKT4(ring, REG_A5XX_SP_FS_OUTPUT_REG(0), 8);
 	for (i = 0; i < 8; i++) {
 		OUT_RING(ring, A5XX_SP_FS_OUTPUT_REG_REGID(color_regid[i]) |

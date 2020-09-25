@@ -46,6 +46,9 @@ fd5_zsa_state_create(struct pipe_context *pctx,
 	so->base = *cso;
 
 	switch (cso->depth.func) {
+	/* this seems to be the case A530 gets ENABLE flag, a508 gets none
+		does a508 even support this stuff?
+	*/
 	case PIPE_FUNC_LESS:
 	case PIPE_FUNC_LEQUAL:
 		so->gras_lrz_cntl = A5XX_GRAS_LRZ_CNTL_ENABLE;
@@ -53,6 +56,7 @@ fd5_zsa_state_create(struct pipe_context *pctx,
 
 	case PIPE_FUNC_GREATER:
 	case PIPE_FUNC_GEQUAL:
+	/* TODO: should a508 get ENABLE flag here? should it get the GREATER flag)? */
 		so->gras_lrz_cntl = A5XX_GRAS_LRZ_CNTL_ENABLE | A5XX_GRAS_LRZ_CNTL_GREATER;
 		break;
 
