@@ -367,26 +367,39 @@ fd5_emit_tile_init(struct fd_batch *batch)
 	struct fd_ringbuffer *ring = batch->gmem;
 	struct pipe_framebuffer_state *pfb = &batch->framebuffer;
 
+	// is this needed?
+
 	fd5_emit_restore(batch, ring);
 
 	if (batch->prologue)
 		fd5_emit_ib(ring, batch->prologue);
 
-	fd5_emit_lrz_flush(ring);
+	//endof is this needed?
 
-	OUT_PKT4(ring, REG_A5XX_GRAS_CL_CNTL, 1);
-	OUT_RING(ring, 0x00000080);   /* GRAS_CL_CNTL */
+	if (ctx->screen->gpu_id != 508) {
+		fd5_emit_lrz_flush(ring);
 
-	OUT_PKT7(ring, CP_SKIP_IB2_ENABLE_GLOBAL, 1);
-	OUT_RING(ring, 0x0);
+		OUT_PKT4(ring, REG_A5XX_GRAS_CL_CNTL, 1);
+		OUT_RING(ring, 0x00000080);   /* GRAS_CL_CNTL */
 
-	OUT_PKT4(ring, REG_A5XX_PC_POWER_CNTL, 1);
-	OUT_RING(ring, 0x00000003);   /* PC_POWER_CNTL */
+		OUT_PKT7(ring, CP_SKIP_IB2_ENABLE_GLOBAL, 1);
+		OUT_RING(ring, 0x0);
 
-	OUT_PKT4(ring, REG_A5XX_VFD_POWER_CNTL, 1);
-	OUT_RING(ring, 0x00000003);   /* VFD_POWER_CNTL */
+		OUT_PKT4(ring, REG_A5XX_PC_POWER_CNTL, 1);
+		OUT_RING(ring, 0x00000003);   /* PC_POWER_CNTL */
+
+		OUT_PKT4(ring, REG_A5XX_VFD_POWER_CNTL, 1);
+		OUT_RING(ring, 0x00000003);   /* VFD_POWER_CNTL */
+	}
 
 	/* 0x10000000 for BYPASS.. 0x7c13c080 for GMEM: */
+
+	/* 
+	   uhh are you sure rob /\?
+	   A530: 0x70036080 (GMEM)
+	   A508: 0x10107880 (BINNING)
+	   A509/512: 0x2010f080 (BINNING)
+	 */
 	fd_wfi(batch, ring);
 	OUT_PKT4(ring, REG_A5XX_RB_CCU_CNTL, 1);
 	OUT_RING(ring, 0x7c13c080);   /* RB_CCU_CNTL */
@@ -697,22 +710,25 @@ fd5_emit_sysmem_prep(struct fd_batch *batch)
 
 	fd5_emit_restore(batch, ring);
 
-	fd5_emit_lrz_flush(ring);
+	if (ctx->screen->gpu_id != 508) {
+		fd5_emit_lrz_flush(ring);
 
-	if (batch->prologue)
-		fd5_emit_ib(ring, batch->prologue);
+		//is this one needed?
+		if (batch->prologue)
+			fd5_emit_ib(ring, batch->prologue);
 
-	OUT_PKT7(ring, CP_SKIP_IB2_ENABLE_GLOBAL, 1);
-	OUT_RING(ring, 0x0);
+		OUT_PKT7(ring, CP_SKIP_IB2_ENABLE_GLOBAL, 1);
+		OUT_RING(ring, 0x0);
 
-	OUT_PKT7(ring, CP_EVENT_WRITE, 1);
-	OUT_RING(ring, PC_CCU_INVALIDATE_COLOR);
+		OUT_PKT7(ring, CP_EVENT_WRITE, 1);
+		OUT_RING(ring, PC_CCU_INVALIDATE_COLOR);
 
-	OUT_PKT4(ring, REG_A5XX_PC_POWER_CNTL, 1);
-	OUT_RING(ring, 0x00000003);   /* PC_POWER_CNTL */
+		OUT_PKT4(ring, REG_A5XX_PC_POWER_CNTL, 1);
+		OUT_RING(ring, 0x00000003);   /* PC_POWER_CNTL */
 
-	OUT_PKT4(ring, REG_A5XX_VFD_POWER_CNTL, 1);
-	OUT_RING(ring, 0x00000003);   /* VFD_POWER_CNTL */
+		OUT_PKT4(ring, REG_A5XX_VFD_POWER_CNTL, 1);
+		OUT_RING(ring, 0x00000003);   /* VFD_POWER_CNTL */
+	}
 
 	/* 0x10000000 for BYPASS.. 0x7c13c080 for GMEM: */
 	fd_wfi(batch, ring);

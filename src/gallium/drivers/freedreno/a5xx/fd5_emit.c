@@ -493,8 +493,8 @@ fd5_emit_vertex_bufs(struct fd_ringbuffer *ring, struct fd5_emit *emit)
 
 			OUT_PKT4(ring, REG_A5XX_VFD_FETCH(j), 4);
 			OUT_RELOC(ring, rsc->bo, off, 0, 0);
-			OUT_RING(ring, size);           /* VFD_FETCH[j].SIZE */
-			OUT_RING(ring, vb->stride);     /* VFD_FETCH[j].STRIDE */
+			OUT_RING(ring, size);           /* VFD_FETCH[j].SIZE = 128 for 508 and 516528 for 530 */
+			OUT_RING(ring, vb->stride);     /* VFD_FETCH[j].STRIDE = 12 for both 508 and 530 */
 
 			OUT_PKT4(ring, REG_A5XX_VFD_DECODE(j), 2);
 			OUT_RING(ring, A5XX_VFD_DECODE_INSTR_IDX(j) |
@@ -506,6 +506,7 @@ fd5_emit_vertex_bufs(struct fd_ringbuffer *ring, struct fd5_emit *emit)
 			OUT_RING(ring, MAX2(1, elem->instance_divisor)); /* VFD_DECODE[j].STEP_RATE */
 
 			OUT_PKT4(ring, REG_A5XX_VFD_DEST_CNTL(j), 1);
+			/* here writemask is 0xf on 508 and 0x7 on 530) */
 			OUT_RING(ring, A5XX_VFD_DEST_CNTL_INSTR_WRITEMASK(vp->inputs[i].compmask) |
 					A5XX_VFD_DEST_CNTL_INSTR_REGID(vp->inputs[i].regid));
 
@@ -813,6 +814,7 @@ fd5_emit_state(struct fd_context *ctx, struct fd_ringbuffer *ring,
 				&ctx->tex[PIPE_SHADER_FRAGMENT]);
 	}
 
+	/* 530 should have a 0 here lol */
 	OUT_PKT4(ring, REG_A5XX_TPL1_FS_TEX_COUNT, 1);
 	OUT_RING(ring, ctx->shaderimg[PIPE_SHADER_FRAGMENT].enabled_mask ?
 			~0 : ctx->tex[PIPE_SHADER_FRAGMENT].num_textures);
@@ -922,17 +924,32 @@ t7              opcode: CP_WAIT_FOR_IDLE (26) (1 dwords)
 	OUT_RING(ring, 0x00000000);   /* UNKNOWN_E292 */
 	OUT_RING(ring, 0x00000000);   /* UNKNOWN_E293 */
 
-	OUT_PKT4(ring, REG_A5XX_RB_MODE_CNTL, 1);
-	OUT_RING(ring, 0x00000044);   /* RB_MODE_CNTL */
+	if (ctx->screen->gpu_id == 508) {
+		OUT_PKT4(ring, REG_A5XX_RB_MODE_CNTL, 1);
+		OUT_RING(ring, 0x00000042);   /* RB_MODE_CNTL */
 
-	OUT_PKT4(ring, REG_A5XX_RB_DBG_ECO_CNTL, 1);
-	OUT_RING(ring, 0x00100000);   /* RB_DBG_ECO_CNTL */
+		OUT_PKT4(ring, REG_A5XX_RB_DBG_ECO_CNTL, 1);
+		OUT_RING(ring, 0x00100200);   /* RB_DBG_ECO_CNTL */
+	} else {
+		OUT_PKT4(ring, REG_A5XX_RB_MODE_CNTL, 1);
+		OUT_RING(ring, 0x00000044);   /* RB_MODE_CNTL */
+
+		OUT_PKT4(ring, REG_A5XX_RB_DBG_ECO_CNTL, 1);
+		OUT_RING(ring, 0x00100000);   /* RB_DBG_ECO_CNTL */
+	}
 
 	OUT_PKT4(ring, REG_A5XX_VFD_MODE_CNTL, 1);
 	OUT_RING(ring, 0x00000000);   /* VFD_MODE_CNTL */
 
-	OUT_PKT4(ring, REG_A5XX_PC_MODE_CNTL, 1);
-	OUT_RING(ring, 0x0000001f);   /* PC_MODE_CNTL */
+	/* Looks like 530 reads here *twice*? */
+
+	if (ctx->screen->gpu_id == 508) {
+		OUT_PKT4(ring, REG_A5XX_PC_MODE_CNTL, 1);
+		OUT_RING(ring, 0x0000000f);   /* PC_MODE_CNTL */
+	} else {
+		OUT_PKT4(ring, REG_A5XX_PC_MODE_CNTL, 1);
+		OUT_RING(ring, 0x0000001f);   /* PC_MODE_CNTL */
+	}
 
 	OUT_PKT4(ring, REG_A5XX_SP_MODE_CNTL, 1);
 	OUT_RING(ring, 0x0000001e);   /* SP_MODE_CNTL */
@@ -946,13 +963,21 @@ t7              opcode: CP_WAIT_FOR_IDLE (26) (1 dwords)
 
 		OUT_PKT4(ring, REG_A5XX_VPC_DBG_ECO_CNTL, 1);
 		OUT_RING(ring, 0x800400);
+	} else if (ctx->screen->gpu_id == 508) {
+		OUT_PKT4(ring, REG_A5XX_SP_DBG_ECO_CNTL, 1);
+		OUT_RING(ring, 0x00000800);   /* SP_DBG_ECO_CNTL */
 	} else {
 		OUT_PKT4(ring, REG_A5XX_SP_DBG_ECO_CNTL, 1);
 		OUT_RING(ring, 0x40000800);   /* SP_DBG_ECO_CNTL */
 	}
 
-	OUT_PKT4(ring, REG_A5XX_TPL1_MODE_CNTL, 1);
-	OUT_RING(ring, 0x00000544);   /* TPL1_MODE_CNTL */
+	if (ctx->screen->gpu_id == 508) {
+		OUT_PKT4(ring, REG_A5XX_TPL1_MODE_CNTL, 1);
+		OUT_RING(ring, 0x000004d4);   /* TPL1_MODE_CNTL */
+	} else {
+		OUT_PKT4(ring, REG_A5XX_TPL1_MODE_CNTL, 1);
+		OUT_RING(ring, 0x00000544);   /* TPL1_MODE_CNTL */
+	}
 
 	OUT_PKT4(ring, REG_A5XX_HLSQ_TIMEOUT_THRESHOLD_0, 2);
 	OUT_RING(ring, 0x00000080);   /* HLSQ_TIMEOUT_THRESHOLD_0 */
@@ -983,6 +1008,19 @@ t7              opcode: CP_WAIT_FOR_IDLE (26) (1 dwords)
 
 	OUT_PKT4(ring, REG_A5XX_GRAS_SC_BIN_CNTL, 1);
 	OUT_RING(ring, 0x00000000);   /* GRAS_SC_BIN_CNTL */
+
+	/* A508 specifics? */
+
+	//should these registers even be touched here or AT ALL?
+
+	// OUT_PKT4(ring, REG_A5XX_GRAS_LRZ_BUFFER_BASE_LO, 5);
+	// OUT_RING(ring, 0x00089000);   /* GRAS_LRZ_BUFFER_BASE_LO  */
+	// OUT_RING(ring, 0x00000005);   /* GRAS_LRZ_BUFFER_BASE_HI */
+	// OUT_RING(ring, 0x00000040);   /* GRAS_LRZ_BUFFER_PITCH */
+	// OUT_RING(ring, 0x0001e000);   /* GRAS_LRZ_FAST_CLEAR_BUFFER_BASE_LO */
+	// OUT_RING(ring, 0x00000005);   /* GRAS_LRZ_FAST_CLEAR_BUFFER_BASE_HI */
+
+	/* End of A508 specifics? */
 
 	OUT_PKT4(ring, REG_A5XX_VPC_FS_PRIMITIVEID_CNTL, 1);
 	OUT_RING(ring, 0x000000ff);   /* VPC_FS_PRIMITIVEID_CNTL */

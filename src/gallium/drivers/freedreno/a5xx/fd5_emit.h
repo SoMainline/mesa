@@ -121,6 +121,8 @@ static inline void
 fd5_set_render_mode(struct fd_context *ctx, struct fd_ringbuffer *ring,
 		enum render_mode_cmd mode)
 {
+	/* BIG TODO HERE DON'T IGNORE IF WE WANT MUCHO PERFORMANCE
+		blob driver seems to be using bypass constantly! */
 	/* TODO add preemption support, gmem bypass, etc */
 	emit_marker5(ring, 7);
 	OUT_PKT7(ring, CP_SET_RENDER_MODE, 5);
@@ -166,6 +168,7 @@ fd5_emit_render_cntl(struct fd_context *ctx, bool blit, bool binning)
 	OUT_RING(ring, 0x00000000 |   /* RB_RENDER_CNTL */
 			COND(binning, A5XX_RB_RENDER_CNTL_BINNING_PASS) |
 			COND(binning, A5XX_RB_RENDER_CNTL_DISABLE_COLOR_PIPE) |
+			/* A508 also throws in FLAG_DEPTH and FLAG_DEPTH2 here */
 			COND(samples_passed, A5XX_RB_RENDER_CNTL_SAMPLES_PASSED) |
 			COND(!blit, 0x8));
 
