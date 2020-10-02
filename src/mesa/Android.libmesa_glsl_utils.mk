@@ -53,22 +53,22 @@ include $(BUILD_STATIC_LIBRARY)
 # libmesa_glsl_utils.a for host
 # ---------------------------------------
 
-include $(CLEAR_VARS)
-
-LOCAL_MODULE := libmesa_glsl_utils
-LOCAL_IS_HOST_MODULE := true
-LOCAL_CFLAGS := -D_POSIX_C_SOURCE=199309L
-
-LOCAL_C_INCLUDES := \
-	$(MESA_TOP)/src/compiler/nir \
-	$(MESA_TOP)/src/mapi \
-	$(MESA_TOP)/src/gallium/include \
-	$(MESA_TOP)/src/gallium/auxiliary
-
-LOCAL_SRC_FILES := \
-	main/extensions_table.c \
-	program/symbol_table.c \
-	program/dummy_errors.c
-
-include $(MESA_COMMON_MK)
-include $(BUILD_HOST_STATIC_LIBRARY)
+# include $(CLEAR_VARS)
+# 
+# LOCAL_MODULE := libmesa_glsl_utils
+# LOCAL_IS_HOST_MODULE := true
+# LOCAL_CFLAGS := -D_POSIX_C_SOURCE=199309L
+# 
+# LOCAL_C_INCLUDES := \
+# 	$(MESA_TOP)/src/compiler/nir \
+# 	$(MESA_TOP)/src/mapi \
+# 	$(MESA_TOP)/src/gallium/include \
+# 	$(MESA_TOP)/src/gallium/auxiliary
+# 
+# LOCAL_SRC_FILES := \
+# 	main/extensions_table.c \
+# 	program/symbol_table.c \
+# 	program/dummy_errors.c
+# 
+# include $(MESA_COMMON_MK)
+# include $(BUILD_HOST_STATIC_LIBRARY)
