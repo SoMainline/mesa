@@ -366,6 +366,7 @@ fd5_emit_tile_init(struct fd_batch *batch)
 {
 	struct fd_ringbuffer *ring = batch->gmem;
 	struct pipe_framebuffer_state *pfb = &batch->framebuffer;
+	struct fd_context *ctx = batch->ctx;
 
 	// is this needed?
 
@@ -394,7 +395,7 @@ fd5_emit_tile_init(struct fd_batch *batch)
 
 	/* 0x10000000 for BYPASS.. 0x7c13c080 for GMEM: */
 
-	/* 
+	/*
 	   uhh are you sure rob /\?
 	   A530: 0x70036080 (GMEM)
 	   A508: 0x10107880 (BINNING)
@@ -707,6 +708,7 @@ static void
 fd5_emit_sysmem_prep(struct fd_batch *batch)
 {
 	struct fd_ringbuffer *ring = batch->gmem;
+	struct fd_context *ctx = batch->ctx;
 
 	fd5_emit_restore(batch, ring);
 

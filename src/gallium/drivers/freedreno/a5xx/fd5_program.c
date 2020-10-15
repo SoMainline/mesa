@@ -234,7 +234,7 @@ setup_stages(struct fd_context *ctx, struct fd5_emit *emit, struct stage *s)
 			/* constlen is in units of 4 * vec4: */
 			assert(s[i].v->constlen % 4 == 0);
 
-			/* 
+			/*
 			NOT SURE IF IT'S OKAY but:
 				(FS = 1)
 				508: HLSQ_FS_CONSTLEN = 2 & HLSQ_FS_INSTRLEN = 1
@@ -285,7 +285,7 @@ setup_stages(struct fd_context *ctx, struct fd5_emit *emit, struct stage *s)
 	}
 
 	s[VS].instroff = 0;
-	s[FS].instroff = (64 + (ctx->screen->gpu_id == 508 ? 3 : 0) - s[FS].instrlen;
+	s[FS].instroff = 64 + (ctx->screen->gpu_id == 508 ? 3 : 0) - s[FS].instrlen;
 	s[HS].instroff = s[DS].instroff = s[GS].instroff = s[FS].instroff;
 }
 
@@ -515,7 +515,7 @@ fd5_program_emit(struct fd_context *ctx, struct fd_ringbuffer *ring,
 	OUT_RING(ring, A5XX_HLSQ_CONTROL_0_REG_FSTHREADSIZE(fssz) |
 			A5XX_HLSQ_CONTROL_0_REG_CSTHREADSIZE(TWO_QUADS) |
 			0x00000880);               /* XXX HLSQ_CONTROL_0 */
-	OUT_RING(ring, A5XX_HLSQ_CONTROL_1_REG_PRIMALLOCTHRESHOLD((ctx->screen->gpu_id == 508 ? 15 :63));
+	OUT_RING(ring, A5XX_HLSQ_CONTROL_1_REG_PRIMALLOCTHRESHOLD((ctx->screen->gpu_id == 508 ? 15 :63)));
 	OUT_RING(ring, A5XX_HLSQ_CONTROL_2_REG_FACEREGID(face_regid) |
 			A5XX_HLSQ_CONTROL_2_REG_SAMPLEID(samp_id_regid) |
 			A5XX_HLSQ_CONTROL_2_REG_SAMPLEMASK(samp_mask_regid) |
