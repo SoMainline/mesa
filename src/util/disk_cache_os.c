@@ -24,6 +24,7 @@
 #ifdef ENABLE_SHADER_CACHE
 
 #include <assert.h>
+#include <fcntl.h>
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>

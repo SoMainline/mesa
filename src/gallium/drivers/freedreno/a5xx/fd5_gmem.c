@@ -375,7 +375,8 @@ fd5_emit_tile_init(struct fd_batch *batch)
 		fd5_emit_ib(ring, batch->prologue);
 
 	//endof is this needed?
-
+#if 0
+TODO: make it not apply to 508 uh somehow
 	if (ctx->screen->gpu_id != 508) {
 		fd5_emit_lrz_flush(ring);
 
@@ -391,7 +392,7 @@ fd5_emit_tile_init(struct fd_batch *batch)
 		OUT_PKT4(ring, REG_A5XX_VFD_POWER_CNTL, 1);
 		OUT_RING(ring, 0x00000003);   /* VFD_POWER_CNTL */
 	}
-
+#endif
 	/* 0x10000000 for BYPASS.. 0x7c13c080 for GMEM: */
 
 	/* 
@@ -709,7 +710,8 @@ fd5_emit_sysmem_prep(struct fd_batch *batch)
 	struct fd_ringbuffer *ring = batch->gmem;
 
 	fd5_emit_restore(batch, ring);
-
+#if 0
+TODO: DONT APPLY TO 508
 	if (ctx->screen->gpu_id != 508) {
 		fd5_emit_lrz_flush(ring);
 
@@ -729,7 +731,7 @@ fd5_emit_sysmem_prep(struct fd_batch *batch)
 		OUT_PKT4(ring, REG_A5XX_VFD_POWER_CNTL, 1);
 		OUT_RING(ring, 0x00000003);   /* VFD_POWER_CNTL */
 	}
-
+#endif
 	/* 0x10000000 for BYPASS.. 0x7c13c080 for GMEM: */
 	fd_wfi(batch, ring);
 	OUT_PKT4(ring, REG_A5XX_RB_CCU_CNTL, 1);
