@@ -404,7 +404,7 @@ xsi:schemaLocation="http://nouveau.freedesktop.org/ rules-ng.xsd">
 	<!--
 	Seems to set the mode flags which control which CP_SET_DRAW_STATE
 	packets are executed, based on their ENABLE_MASK values
-	
+
 	CP_SET_MODE w/ payload of 0x1 seems to cause CP_SET_DRAW_STATE
 	packets w/ ENABLE_MASK & 0x6 to execute immediately
 	 -->

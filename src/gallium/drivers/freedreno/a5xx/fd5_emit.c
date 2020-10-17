@@ -882,6 +882,10 @@ fd5_emit_restore(struct fd_batch *batch, struct fd_ringbuffer *ring)
 	struct fd_context *ctx = batch->ctx;
 
 	fd5_set_render_mode(ctx, ring, BYPASS);
+
+	// TODO: preempt?
+	OUT_PKT7(ring, CP_PREEMPT_ENABLE_LOCAL, 1);
+	OUT_RING(ring, 1);
 	fd5_cache_flush(batch, ring);
 
 	OUT_PKT4(ring, REG_A5XX_HLSQ_UPDATE_CNTL, 1);
@@ -901,11 +905,14 @@ t7              opcode: CP_WAIT_FOR_IDLE (26) (1 dwords)
 	OUT_RING(ring, 0xffffffff);
 
 	OUT_PKT4(ring, REG_A5XX_PC_RASTER_CNTL, 1);
+	// POLYMODE_FRONT_PTYPE/POLYMODE_BACK_PTYPE = PC_DRAW_TRIANGLES
 	OUT_RING(ring, 0x00000012);
 
 	OUT_PKT4(ring, REG_A5XX_GRAS_SU_POINT_MINMAX, 2);
 	OUT_RING(ring, A5XX_GRAS_SU_POINT_MINMAX_MIN(1.0) |
-			A5XX_GRAS_SU_POINT_MINMAX_MAX(4092.0));
+			// A5XX_GRAS_SU_POINT_MINMAX_MAX(4092.0)
+			A5XX_GRAS_SU_POINT_MINMAX_MAX(1023.0)
+			);
 	OUT_RING(ring, A5XX_GRAS_SU_POINT_SIZE(0.5));
 
 	OUT_PKT4(ring, REG_A5XX_GRAS_SU_CONSERVATIVE_RAS_CNTL, 1);
@@ -963,12 +970,12 @@ t7              opcode: CP_WAIT_FOR_IDLE (26) (1 dwords)
 
 		OUT_PKT4(ring, REG_A5XX_VPC_DBG_ECO_CNTL, 1);
 		OUT_RING(ring, 0x800400);
-	} else if (ctx->screen->gpu_id == 508) {
-		OUT_PKT4(ring, REG_A5XX_SP_DBG_ECO_CNTL, 1);
-		OUT_RING(ring, 0x00000800);   /* SP_DBG_ECO_CNTL */
-	} else {
+	} else if (ctx->screen->gpu_id == 530) {
 		OUT_PKT4(ring, REG_A5XX_SP_DBG_ECO_CNTL, 1);
 		OUT_RING(ring, 0x40000800);   /* SP_DBG_ECO_CNTL */
+	} else {
+		OUT_PKT4(ring, REG_A5XX_SP_DBG_ECO_CNTL, 1);
+		OUT_RING(ring, 0x800);   /* SP_DBG_ECO_CNTL */
 	}
 
 	if (ctx->screen->gpu_id == 508) {
@@ -984,6 +991,7 @@ t7              opcode: CP_WAIT_FOR_IDLE (26) (1 dwords)
 	OUT_RING(ring, 0x00000000);   /* HLSQ_TIMEOUT_THRESHOLD_1 */
 
 	OUT_PKT4(ring, REG_A5XX_VPC_DBG_ECO_CNTL, 1);
+	// ALLFLATOPTDIS
 	OUT_RING(ring, 0x00000400);   /* VPC_DBG_ECO_CNTL */
 
 	OUT_PKT4(ring, REG_A5XX_HLSQ_MODE_CNTL, 1);

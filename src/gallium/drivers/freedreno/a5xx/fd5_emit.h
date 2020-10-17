@@ -127,15 +127,50 @@ fd5_set_render_mode(struct fd_context *ctx, struct fd_ringbuffer *ring,
 	emit_marker5(ring, 7);
 	OUT_PKT7(ring, CP_SET_RENDER_MODE, 5);
 	OUT_RING(ring, CP_SET_RENDER_MODE_0_MODE(mode));
-	OUT_RING(ring, 0x00015000);   /* ADDR_0_LO */
-	OUT_RING(ring, 0x00000005);   /* ADDR_0_HI */
+	OUT_RING(ring, 0x15000);   /* ADDR_0_LO */
+	OUT_RING(ring, 0x5);   /* ADDR_0_HI */
 	OUT_RING(ring, COND(mode == GMEM, CP_SET_RENDER_MODE_3_GMEM_ENABLE) |
 			COND(mode == BINNING, CP_SET_RENDER_MODE_3_VSC_ENABLE));
+#ifdef USE_PRESET_RESTORE_BUFFER
+	// OUT_RING(ring, 3);
+
+	// OUT_RING(ring, 0x00000000);   /* ADDR_1_LEN */
+	// OUT_RING(ring, 0x00000000);   /* ADDR_1_LO */
+	// OUT_RING(ring, 0x00000000);   /* ADDR_1_HI */
+#else
 	OUT_RING(ring, 0x00000000);
-	// OUT_RING(ring, 0x00000003);
-	// OUT_RING(ring, 0x0000000f);   /* ADDR_1_LEN */
-	// OUT_RING(ring, 0x0003f010);   /* ADDR_1_LO */
-	// OUT_RING(ring, 0x00000005);   /* ADDR_1_HI */
+
+	// Emit the packages in place
+	OUT_PKT4(ring, REG_A5XX_GRAS_LRZ_CNTL, 1);
+	OUT_RING(ring, 8);
+	emit_marker5(ring, 0);
+	OUT_PKT7(ring, CP_WAIT_MEM_WRITES, 0);
+
+// t7                              opcode: CP_REG_TO_MEM_OFFSET_MEM (74) (6 dwords)
+//                                         { REG = 0xb78 | CNT = 0 | 64B | ACCUMULATE }
+//                                         { DEST = 0x12c40 }
+//                                         { DEST_HI = 0x5 }
+//                                         { OFFSET_LO = 0x15000 }
+//                                         { OFFSET_HI = 0x5 }
+
+	// OUT_PKT7(ring, CP_REG_TO_MEM_OFFSET_MEM, 5);
+	// OUT_RING(ring, CP_REG_TO_MEM_OFFSET_MEM_0_REG(0xb78)
+	// 		| CP_REG_TO_MEM_OFFSET_MEM_0_CNT(0)
+	// 		| CP_REG_TO_MEM_OFFSET_MEM_0_64B
+	// 		| CP_REG_TO_MEM_OFFSET_MEM_0_ACCUMULATE);
+	// OUT_RING(ring, CP_REG_TO_MEM_OFFSET_MEM_1_DEST(0x12c40));
+	// OUT_RING(ring, CP_REG_TO_MEM_OFFSET_MEM_2_DEST_HI(0x5));
+	// OUT_RING(ring, CP_REG_TO_MEM_OFFSET_MEM_3_OFFSET_LO(0x15000));
+	// OUT_RING(ring, CP_REG_TO_MEM_OFFSET_MEM_4_OFFSET_HI(0x5));
+
+	// OUT_PKT7(ring, CP_MEM_WRITE, 3);
+	// // { ADDR_LO = 0x11000 }
+	// // { ADDR_HI = 0x5 }
+	// OUT_RING(ring, 0x11000); /* ADDR_LO */
+	// OUT_RING(ring, 0x5); /* ADDR_HI */
+	// OUT_RING(ring, 1);
+
+#endif
 	emit_marker5(ring, 7);
 }
 
