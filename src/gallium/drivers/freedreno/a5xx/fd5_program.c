@@ -654,13 +654,29 @@ fd5_program_emit(struct fd_context *ctx, struct fd_ringbuffer *ring,
 			}
 		}
 
-		OUT_PKT4(ring, REG_A5XX_VPC_VARYING_INTERP_MODE(0), 8);
-		for (i = 0; i < 8; i++)
-			OUT_RING(ring, vinterp[i]);     /* VPC_VARYING_INTERP[i].MODE */
+		// OUT_PKT4(ring, REG_A5XX_VPC_VARYING_INTERP_MODE(0), 8);
+		OUT_PKT4(ring, REG_A5XX_VPC_VARYING_INTERP_MODE(0), 1);
 
-		OUT_PKT4(ring, REG_A5XX_VPC_VARYING_PS_REPL_MODE(0), 8);
-		for (i = 0; i < 8; i++)
-			OUT_RING(ring, vpsrepl[i]);   /* VPC_VARYING_PS_REPL[i] */
+		uint32_t val = 0;
+		for (i = 3; i>=0;i--)
+			val = (val<<8) | vinterp[i];
+
+		// OUT_RING(ring, 0xeaeaeaea);
+		OUT_RING(ring, val);
+
+		// for (i = 0; i < 8; i++)
+		// 	OUT_RING(ring, vinterp[i]);     /* VPC_VARYING_INTERP[i].MODE */
+
+		// OUT_PKT4(ring, REG_A5XX_VPC_VARYING_PS_REPL_MODE(0), 8);
+		// for (i = 0; i < 8; i++)
+		// 	OUT_RING(ring, vpsrepl[i]);   /* VPC_VARYING_PS_REPL[i] */
+
+		OUT_PKT4(ring, REG_A5XX_VPC_VARYING_PS_REPL_MODE(0), 1);
+		for (i = 3; i>=0;i--)
+			val = (val<<8) | vpsrepl[i];
+
+		// OUT_RING(ring, 0xeaeaeaea);
+		OUT_RING(ring, val);
 	}
 
 	if (!emit->binning_pass)
