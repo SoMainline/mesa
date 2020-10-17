@@ -131,10 +131,11 @@ fd5_set_render_mode(struct fd_context *ctx, struct fd_ringbuffer *ring,
 	OUT_RING(ring, 0x00000005);   /* ADDR_0_HI */
 	OUT_RING(ring, COND(mode == GMEM, CP_SET_RENDER_MODE_3_GMEM_ENABLE) |
 			COND(mode == BINNING, CP_SET_RENDER_MODE_3_VSC_ENABLE));
-	OUT_RING(ring, 0x00000003);
-	OUT_RING(ring, 0x0000000f);   /* ADDR_1_LEN */
-	OUT_RING(ring, 0x0003f010);   /* ADDR_1_LO */
-	OUT_RING(ring, 0x00000005);   /* ADDR_1_HI */
+	OUT_RING(ring, 0x00000000);
+	// OUT_RING(ring, 0x00000003);
+	// OUT_RING(ring, 0x0000000f);   /* ADDR_1_LEN */
+	// OUT_RING(ring, 0x0003f010);   /* ADDR_1_LO */
+	// OUT_RING(ring, 0x00000005);   /* ADDR_1_HI */
 	emit_marker5(ring, 7);
 }
 
