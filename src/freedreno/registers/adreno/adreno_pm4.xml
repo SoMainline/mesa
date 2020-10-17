@@ -447,9 +447,10 @@ xsi:schemaLocation="http://nouveau.freedesktop.org/ rules-ng.xsd">
 	<!-- jmptable entry used to handle type4 packet on a5xx+: -->
 	<value name="PKT4" value="0x04" varset="chip" variants="A5XX-"/>
 
+	<value name="CP_REG_TO_MEM_OFFSET_MEM" value="0x74" varset="chip" variants="A5XX-"/>
+
 	<!-- TODO do these exist on A5xx? -->
 	<value name="CP_SCRATCH_WRITE" value="0x4c" varset="chip" variants="A6XX"/>
-	<value name="CP_REG_TO_MEM_OFFSET_MEM" value="0x74" varset="chip" variants="A6XX"/>
 	<value name="CP_REG_TO_MEM_OFFSET_REG" value="0x72" varset="chip" variants="A6XX"/>
 	<value name="CP_WAIT_MEM_GTE" value="0x14" varset="chip" variants="A6XX"/>
 	<value name="CP_WAIT_TWO_REGS" value="0x70" varset="chip" variants="A6XX"/>
