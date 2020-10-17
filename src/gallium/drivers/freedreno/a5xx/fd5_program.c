@@ -357,44 +357,58 @@ fd5_program_emit(struct fd_context *ctx, struct fd_ringbuffer *ring,
 	OUT_PKT4(ring, REG_A5XX_HLSQ_CS_CONFIG, 1);
 	OUT_RING(ring, 0x00000000);
 
-	OUT_PKT4(ring, REG_A5XX_HLSQ_VS_CNTL, 5);
+	OUT_PKT4(ring, REG_A5XX_HLSQ_VS_CNTL, 2);
 	OUT_RING(ring, A5XX_HLSQ_VS_CNTL_INSTRLEN(s[VS].instrlen) |
 			COND(s[VS].v && s[VS].v->has_ssbo, A5XX_HLSQ_VS_CNTL_SSBO_ENABLE));
 	OUT_RING(ring, A5XX_HLSQ_FS_CNTL_INSTRLEN(s[FS].instrlen) |
 			COND(s[FS].v && s[FS].v->has_ssbo, A5XX_HLSQ_FS_CNTL_SSBO_ENABLE));
-	OUT_RING(ring, A5XX_HLSQ_HS_CNTL_INSTRLEN(s[HS].instrlen) |
-			COND(s[HS].v && s[HS].v->has_ssbo, A5XX_HLSQ_HS_CNTL_SSBO_ENABLE));
-	OUT_RING(ring, A5XX_HLSQ_DS_CNTL_INSTRLEN(s[DS].instrlen) |
-			COND(s[DS].v && s[DS].v->has_ssbo, A5XX_HLSQ_DS_CNTL_SSBO_ENABLE));
-	OUT_RING(ring, A5XX_HLSQ_GS_CNTL_INSTRLEN(s[GS].instrlen) |
-			COND(s[GS].v && s[GS].v->has_ssbo, A5XX_HLSQ_GS_CNTL_SSBO_ENABLE));
+
+	// OUT_PKT4(ring, REG_A5XX_HLSQ_VS_CNTL, 1);
+	// OUT_RING(ring, A5XX_HLSQ_VS_CNTL_INSTRLEN(s[VS].instrlen) |
+	// 		COND(s[VS].v && s[VS].v->has_ssbo, A5XX_HLSQ_VS_CNTL_SSBO_ENABLE));
+	// OUT_PKT4(ring, REG_A5XX_HLSQ_FS_CNTL, 1);
+	// OUT_RING(ring, A5XX_HLSQ_FS_CNTL_INSTRLEN(s[FS].instrlen) |
+	// 		COND(s[FS].v && s[FS].v->has_ssbo, A5XX_HLSQ_FS_CNTL_SSBO_ENABLE));
+
+	// OUT_RING(ring, A5XX_HLSQ_HS_CNTL_INSTRLEN(s[HS].instrlen) |
+	// 		COND(s[HS].v && s[HS].v->has_ssbo, A5XX_HLSQ_HS_CNTL_SSBO_ENABLE));
+	// OUT_RING(ring, A5XX_HLSQ_DS_CNTL_INSTRLEN(s[DS].instrlen) |
+	// 		COND(s[DS].v && s[DS].v->has_ssbo, A5XX_HLSQ_DS_CNTL_SSBO_ENABLE));
+	// OUT_RING(ring, A5XX_HLSQ_GS_CNTL_INSTRLEN(s[GS].instrlen) |
+	// 		COND(s[GS].v && s[GS].v->has_ssbo, A5XX_HLSQ_GS_CNTL_SSBO_ENABLE));
 
 	OUT_PKT4(ring, REG_A5XX_SP_VS_CONFIG, 5);
+
+	/* constoff is =2/=2/=2/=2 downstream and =0/=1/=1/=1 up */
 	OUT_RING(ring, A5XX_SP_VS_CONFIG_CONSTOBJECTOFFSET(s[VS].constoff) |
 			A5XX_SP_VS_CONFIG_SHADEROBJOFFSET(s[VS].instroff) |
 			COND(s[VS].v, A5XX_SP_VS_CONFIG_ENABLED));
+
 	OUT_RING(ring, A5XX_SP_FS_CONFIG_CONSTOBJECTOFFSET(s[FS].constoff) |
 			A5XX_SP_FS_CONFIG_SHADEROBJOFFSET(s[FS].instroff) |
 			COND(s[FS].v, A5XX_SP_FS_CONFIG_ENABLED));
 	OUT_RING(ring, A5XX_SP_HS_CONFIG_CONSTOBJECTOFFSET(s[HS].constoff) |
 			A5XX_SP_HS_CONFIG_SHADEROBJOFFSET(s[HS].instroff) |
 			COND(s[HS].v, A5XX_SP_HS_CONFIG_ENABLED));
+
 	OUT_RING(ring, A5XX_SP_DS_CONFIG_CONSTOBJECTOFFSET(s[DS].constoff) |
 			A5XX_SP_DS_CONFIG_SHADEROBJOFFSET(s[DS].instroff) |
 			COND(s[DS].v, A5XX_SP_DS_CONFIG_ENABLED));
+
 	OUT_RING(ring, A5XX_SP_GS_CONFIG_CONSTOBJECTOFFSET(s[GS].constoff) |
 			A5XX_SP_GS_CONFIG_SHADEROBJOFFSET(s[GS].instroff) |
 			COND(s[GS].v, A5XX_SP_GS_CONFIG_ENABLED));
+	/* end of constoff comment */
 
 	OUT_PKT4(ring, REG_A5XX_SP_CS_CONFIG, 1);
 	OUT_RING(ring, 0x00000000);
 
 	OUT_PKT4(ring, REG_A5XX_HLSQ_VS_CONSTLEN, 2);
-	OUT_RING(ring, s[VS].constlen);    /* HLSQ_VS_CONSTLEN */
+	OUT_RING(ring, s[VS].constlen);    /* HLSQ_VS_CONSTLEN */ //=0up, =2down
 	OUT_RING(ring, s[VS].instrlen);    /* HLSQ_VS_INSTRLEN */
 
 	OUT_PKT4(ring, REG_A5XX_HLSQ_FS_CONSTLEN, 2);
-	OUT_RING(ring, s[FS].constlen);    /* HLSQ_FS_CONSTLEN */
+	OUT_RING(ring, s[FS].constlen);    /* HLSQ_FS_CONSTLEN */ //=1up, =3down
 	OUT_RING(ring, s[FS].instrlen);    /* HLSQ_FS_INSTRLEN */
 
 	OUT_PKT4(ring, REG_A5XX_HLSQ_HS_CONSTLEN, 2);
@@ -579,12 +593,17 @@ fd5_program_emit(struct fd_context *ctx, struct fd_ringbuffer *ring,
 				A5XX_RB_RENDER_CONTROL1_SAMPLEID));
 
 	/* 508 has REGID=0 here, 530 has REGID=2 */
-	OUT_PKT4(ring, REG_A5XX_SP_FS_OUTPUT_REG(0), 8);
-	for (i = 0; i < 8; i++) {
+	OUT_PKT4(ring, REG_A5XX_SP_FS_OUTPUT_REG(0), s[FS].v->outputs_count);
+	for (i = 0; i < s[FS].v->outputs_count; i++) { // 508 only has 1 these?? or 4 sometimes??
 		OUT_RING(ring, A5XX_SP_FS_OUTPUT_REG_REGID(color_regid[i]) |
 				COND(color_regid[i] & HALF_REG_ID, A5XX_SP_FS_OUTPUT_REG_HALF_PRECISION));
 	}
 
+	// OUT_PKT4(ring, REG_A5XX_SP_FS_OUTPUT_CNTL, s[FS].v->outputs_count);
+	// for (i = 0; i < s[FS].v->outputs_count; i++) { // 508 only has 1 these?? or 4 sometimes??
+	// 	OUT_RING(ring, A5XX_SP_FS_OUTPUT_CNTL_REG_REGID(color_regid[i]) |
+	// 			COND(color_regid[i] & HALF_REG_ID, A5XX_SP_FS_OUTPUT_CNTL_REG_HALF_PRECISION));
+	// }
 
 	OUT_PKT4(ring, REG_A5XX_VPC_PACK, 1);
 	OUT_RING(ring, A5XX_VPC_PACK_NUMNONPOSVAR(s[FS].v->total_in) |
