@@ -1011,11 +1011,8 @@ t7              opcode: CP_WAIT_FOR_IDLE (26) (1 dwords)
 	// OUT_PKT4(ring, REG_A5XX_GRAS_SU_CONSERVATIVE_RAS_CNTL, 1);
 	// OUT_RING(ring, 0x00000000);   /* GRAS_SU_CONSERVATIVE_RAS_CNTL */
 
-	// OUT_PKT4(ring, REG_A5XX_GRAS_SC_BIN_CNTL, 1);
-	// OUT_RING(ring, 0x00000000);   /* GRAS_SC_BIN_CNTL */
-
-	// OUT_PKT4(ring, REG_A5XX_GRAS_SC_BIN_CNTL, 1);
-	// OUT_RING(ring, 0x00000000);   /* GRAS_SC_BIN_CNTL */
+	OUT_PKT4(ring, REG_A5XX_GRAS_SC_BIN_CNTL, 1);
+	OUT_RING(ring, 0x00000000);   /* GRAS_SC_BIN_CNTL */
 
 	/* A508 specifics? */
 

@@ -159,6 +159,8 @@ emit_zs(struct fd_ringbuffer *ring, struct pipe_surface *zsbuf,
 		OUT_RING(ring, A5XX_RB_DEPTH_BUFFER_PITCH(stride));
 		OUT_RING(ring, A5XX_RB_DEPTH_BUFFER_ARRAY_PITCH(size));
 
+		DBG("Setting buffer array pitch to %d", size);
+
 		OUT_PKT4(ring, REG_A5XX_GRAS_SU_DEPTH_BUFFER_INFO, 1);
 		OUT_RING(ring, A5XX_GRAS_SU_DEPTH_BUFFER_INFO_DEPTH_FORMAT(fmt));
 
@@ -171,6 +173,8 @@ emit_zs(struct fd_ringbuffer *ring, struct pipe_surface *zsbuf,
 			OUT_PKT4(ring, REG_A5XX_GRAS_LRZ_BUFFER_BASE_LO, 3);
 			OUT_RELOC(ring, rsc->lrz, 0x1000, 0, 0);
 			OUT_RING(ring, A5XX_GRAS_LRZ_BUFFER_PITCH(rsc->lrz_pitch));
+
+			DBG("lrz_pitch %d", rsc->lrz_pitch);
 
 			OUT_PKT4(ring, REG_A5XX_GRAS_LRZ_FAST_CLEAR_BUFFER_BASE_LO, 2);
 			OUT_RELOC(ring, rsc->lrz, 0, 0, 0);

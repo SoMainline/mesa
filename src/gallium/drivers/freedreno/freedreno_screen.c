@@ -880,7 +880,9 @@ fd_screen_create(struct fd_device *dev, struct renderonly *ro)
 	uint64_t val;
 
 	fd_mesa_debug = debug_get_option_fd_mesa_debug();
-	fd_mesa_debug |= FD_DBG_NOBYPASS;
+	fd_mesa_debug |= FD_DBG_MSGS;
+	// fd_mesa_debug |= FD_DBG_NOBIN;
+	// fd_mesa_debug |= FD_DBG_NOBYPASS;
 
 	if (fd_mesa_debug & FD_DBG_NOBIN)
 		fd_binning_enabled = false;
