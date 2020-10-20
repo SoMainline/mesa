@@ -305,14 +305,5 @@ LOCAL_WHOLE_STATIC_LIBRARIES := \
 LOCAL_SHARED_LIBRARIES := $(ANV_SHARED_LIBRARIES) libz libsync liblog libcutils
 LOCAL_HEADER_LIBRARIES += $(VULKAN_COMMON_HEADER_LIBRARIES)
 
-# If Android version >=8 MESA should static link libexpat else should dynamic link
-ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 27; echo $$?), 0)
-LOCAL_STATIC_LIBRARIES := \
-       libexpat
-else
- LOCAL_SHARED_LIBRARIES += \
-        libexpat
-endif
-
 include $(MESA_COMMON_MK)
 include $(BUILD_SHARED_LIBRARY)

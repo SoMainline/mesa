@@ -52,15 +52,6 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_CFLAGS := -DNO_FORMAT_ASM
 
-# If Android version >=8 MESA should static link libexpat else should dynamic link
-ifeq ($(shell test $(PLATFORM_SDK_VERSION) -ge 27; echo $$?), 0)
-LOCAL_STATIC_LIBRARIES := \
-	libexpat
-else
-LOCAL_SHARED_LIBRARIES := \
-	libexpat
-endif
-
 LOCAL_SHARED_LIBRARIES += liblog libsync libcutils
 
 # Generated sources
