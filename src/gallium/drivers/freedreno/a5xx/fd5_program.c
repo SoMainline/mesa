@@ -712,11 +712,24 @@ fd5_program_emit(struct fd_context *ctx, struct fd_ringbuffer *ring,
 		if (s[FS].instrlen)
 			fd5_emit_shader(ring, s[FS].v);
 
+/*
+t4                      write VFD_CONTROL_1 (e401)
+                                VFD_CONTROL_1: { REGID4VTX = r0.w | REGID4INST = r63.x | REGID4PRIMID = r63.x }
+                                VFD_CONTROL_2: { REGID_PATCHID = r63.x | 0xfc00 }
+                                VFD_CONTROL_3: { REGID_PATCHID = r63.x | REGID_TESSX = r63.x | REGID_TESSY = r63.x | 0xfc }
+                                VFD_CONTROL_4: 0xfc
+                                VFD_CONTROL_5: 0
+*/
+
+	const int dummy = /* r */ 63<<2 | /* .x */ 0; // = 0xfc
+
 	OUT_PKT4(ring, REG_A5XX_VFD_CONTROL_1, 5);
 	OUT_RING(ring, A5XX_VFD_CONTROL_1_REGID4VTX(vertex_regid) |
 			A5XX_VFD_CONTROL_1_REGID4INST(instance_regid) |
-			0xfc0000);
-	OUT_RING(ring, 0x0000fcfc);   /* VFD_CONTROL_2 */
+			A5XX_VFD_CONTROL_1_REGID4PRIMID(dummy));
+
+	OUT_RING(ring, A5XX_VFD_CONTROL_2_REGID_PATCHID(dummy) |
+			A5XX_VFD_CONTROL_2_REGID_UNK(dummy));   /* VFD_CONTROL_2 */
 	OUT_RING(ring, 0x0000fcfc);   /* VFD_CONTROL_3 */
 	OUT_RING(ring, 0x000000fc);   /* VFD_CONTROL_4 */
 	OUT_RING(ring, 0x00000000);   /* VFD_CONTROL_5 */

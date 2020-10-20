@@ -2408,13 +2408,19 @@ bit 7 for RECTLIST (clear) when z32s8 (used for clear of depth32?  not set
 	</reg32>
 	<reg32 offset="0xe402" name="VFD_CONTROL_2">
 		<bitfield name="REGID_PATCHID" low="0" high="7" type="a3xx_regid"/><!-- same as VFD_CONTROL_3.REGID_PATCHID? -->
+		<!-- Set to 0xfc (r63.x) on a508 -->
+		<bitfield name="REGID_UNK" low="8" high="15" type="a3xx_regid"/>
 	</reg32>
 	<reg32 offset="0xe403" name="VFD_CONTROL_3">
+		<!-- Set to 0xfc (r63.x) on a508 -->
+		<bitfield name="REGID_UNK" low="0" high="7" type="a3xx_regid"/>
 		<bitfield name="REGID_PATCHID" low="8" high="15" type="a3xx_regid"/>
 		<bitfield name="REGID_TESSX" low="16" high="23" type="a3xx_regid"/>
 		<bitfield name="REGID_TESSY" low="24" high="31" type="a3xx_regid"/>
 	</reg32>
 	<reg32 offset="0xe404" name="VFD_CONTROL_4">
+		<!-- Set to 0xfc (r63.x) on a508 -->
+		<bitfield name="REGID_UNK" low="0" high="7" type="a3xx_regid"/>
 	</reg32>
 	<reg32 offset="0xe405" name="VFD_CONTROL_5">
 		<!-- b0 set if gl_PrimitiveID used in fs ?? -->
