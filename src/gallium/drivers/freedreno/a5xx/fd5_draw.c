@@ -367,6 +367,8 @@ fd5_clear(struct fd_context *ctx, unsigned buffers,
 	OUT_PKT4(ring, REG_A5XX_RB_CLEAR_CNTL, 1);
 	OUT_RING(ring, 0x00000000);   /* RB_CLEAR_CNTL */
 
+	ctx->dirty |= FD_DIRTY_SCISSOR;
+
 	return true;
 }
 
