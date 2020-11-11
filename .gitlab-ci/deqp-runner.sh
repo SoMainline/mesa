@@ -128,7 +128,7 @@ run_cts() {
         --testlog-to-xml  /deqp/executor/testlog-to-xml \
         $JOB \
         $SUMMARY_LIMIT \
-	$DEQP_RUNNER_OPTIONS \
+        $DEQP_RUNNER_OPTIONS \
         -- \
         $DEQP_OPTIONS
 }
