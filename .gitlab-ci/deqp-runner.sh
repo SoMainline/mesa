@@ -119,7 +119,7 @@ run_cts() {
         $FLAKES \
         $JOB \
         $SUMMARY_LIMIT \
-	$DEQP_RUNNER_OPTIONS \
+        $DEQP_RUNNER_OPTIONS \
         -- \
         $DEQP_OPTIONS
 }
