@@ -2764,6 +2764,16 @@ bit 7 for RECTLIST (clear) when z32s8 (used for clear of depth32?  not set
 		src via sampler, to enable scaling??)  0x2040 also used in this
 		case.
 	 -->
+
+	<reg32 offset="0x2000" name="RB_2D_BLEND_INFO">
+		<bitfield name="COLOR_FORMAT" low="0" high="7" type="a5xx_color_fmt"/>
+		<bitfield name="UNK_1" pos="20" type="boolean"/>
+		<bitfield name="UNK_2" pos="22" type="boolean"/>
+	</reg32>
+
+	<reg32 offset="0x2002" name="RB_2D_BLEND_LO"/>
+	<reg32 offset="0x2003" name="RB_2D_BLEND_HI"/>
+
 	<reg32 offset="0x2100" name="RB_2D_BLIT_CNTL"/>  <!-- same as 0x2180 -->
 	<reg32 offset="0x2101" name="RB_2D_SRC_SOLID_DW0"/>
 	<reg32 offset="0x2102" name="RB_2D_SRC_SOLID_DW1"/>
