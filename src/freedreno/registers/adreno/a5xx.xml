@@ -1944,12 +1944,13 @@ xsi:schemaLocation="http://nouveau.freedesktop.org/ rules-ng.xsd">
 	</reg32>
 	<reg32 offset="0xe141" name="RB_RENDER_CNTL">
 <!--
-bit 3 set for normal draws
+bit 3 set for normal draws, copies
 bit 7 for RECTLIST (clear) when z32s8 (used for clear of depth32?  not set
 	for z32 with no stencil, but maybe in that case separate z/s not used?
 	see mrt-fbo-* zs=2)
  -->
 		<bitfield name="BINNING_PASS" pos="0" type="boolean"/>
+		<bitfield name="NORMAL_DRAW" pos="3" type="boolean"/>
 		<bitfield name="SAMPLES_PASSED" pos="6" type="boolean"/>
 		<bitfield name="DISABLE_COLOR_PIPE" pos="7" type="boolean"/>
 		<!-- why everything twice?? maybe read vs write? -->
@@ -2823,8 +2824,7 @@ bit 7 for RECTLIST (clear) when z32s8 (used for clear of depth32?  not set
 
 0x2184 0x9 for copy, 0x1 for blit (maybe bitmask of enabled src/dst???)
  -->
-	<reg32 offset="0x2100" name="UNKNOWN_2100"/>
-	<reg32 offset="0x2180" name="UNKNOWN_2180"/>
+	<reg32 offset="0x2040" name="UNKNOWN_2040"/>
 	<reg32 offset="0x2184" name="UNKNOWN_2184"/>
 </domain>
 
