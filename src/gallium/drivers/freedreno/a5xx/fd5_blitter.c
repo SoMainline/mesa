@@ -273,9 +273,12 @@ emit_blit_buffer(struct fd_ringbuffer *ring, const struct pipe_blit_info *info)
 		OUT_RING(ring, 1 << 22 |
 				1 << 20 |
 				A5XX_RB_2D_BLEND_INFO_COLOR_FORMAT(RB5_R8_UNORM));
-		OUT_RING(ring, 0x000083f9);
+		OUT_RING(ring, A5XX_RB_2D_BLEND_SIZE_WIDTH(sshift+w) |
+				A5XX_RB_2D_BLEND_SIZE_ARRAY_PITCH(128));
+		// OUT_RING(ring, 0);
 		OUT_RELOC(ring, src->bo, soff, 0, 0);    /* RB_2D_BLEND_LO/HI */
-		OUT_RING(ring, 0x00001fc8);
+		// OUT_RING(ring, 0x00001fc8);
+		OUT_RING(ring, 0);
 		OUT_RING(ring, 0x00000000);
 		OUT_RING(ring, 0x00000000);
 		OUT_RING(ring, 0x00000000);
@@ -389,7 +392,7 @@ emit_blit(struct fd_ringbuffer *ring, const struct pipe_blit_info *info)
 		debug_assert((doff + (dbox->height * dpitch)) <= fd_bo_size(dst->bo));
 
 		OUT_PKT7(ring, CP_SET_RENDER_MODE, 1);
-		OUT_RING(ring, CP_SET_RENDER_MODE_0_MODE(BLIT2D));
+		OUT_RING(ring, CP_SET_RENDER_MODE_0_MODE(BLIT2DSCALE));
 
 		/*
 		 * Emit source:
@@ -411,6 +414,22 @@ emit_blit(struct fd_ringbuffer *ring, const struct pipe_blit_info *info)
 		OUT_RING(ring, A5XX_GRAS_2D_SRC_INFO_COLOR_FORMAT(sfmt) |
 				A5XX_GRAS_2D_SRC_INFO_TILE_MODE(stile) |
 				A5XX_GRAS_2D_SRC_INFO_COLOR_SWAP(sswap));
+
+		OUT_PKT4(ring, REG_A5XX_RB_2D_BLEND_INFO, 10);
+		OUT_RING(ring, 1 << 22 |
+				1 << 20 |
+				A5XX_RB_2D_BLEND_INFO_COLOR_FORMAT(RB5_R8_UNORM));
+		OUT_RING(ring, A5XX_RB_2D_BLEND_SIZE_WIDTH(sbox->width) |
+				A5XX_RB_2D_BLEND_SIZE_ARRAY_PITCH(spitch));
+		// OUT_RING(ring, 0);
+		OUT_RELOC(ring, src->bo, soff, 0, 0);    /* RB_2D_BLEND_LO/HI */
+		// OUT_RING(ring, 0x00001fc8);
+		OUT_RING(ring, 0x800);
+		OUT_RING(ring, 0x00000000);
+		OUT_RING(ring, 0x00000000);
+		OUT_RING(ring, 0x00000000);
+		OUT_RING(ring, 0x00000000);
+		OUT_RING(ring, 0x00000000);
 
 		/*
 		 * Emit destination:
@@ -437,7 +456,7 @@ emit_blit(struct fd_ringbuffer *ring, const struct pipe_blit_info *info)
 		 * Blit command:
 		 */
 		OUT_PKT7(ring, CP_BLIT, 5);
-		OUT_RING(ring, CP_BLIT_0_OP(BLIT_OP_COPY));
+		OUT_RING(ring, CP_BLIT_0_OP(BLIT_OP_SCALE));
 		OUT_RING(ring, CP_BLIT_1_SRC_X1(sx1) | CP_BLIT_1_SRC_Y1(sy1));
 		OUT_RING(ring, CP_BLIT_2_SRC_X2(sx2) | CP_BLIT_2_SRC_Y2(sy2));
 		OUT_RING(ring, CP_BLIT_3_DST_X1(dx1) | CP_BLIT_3_DST_Y1(dy1));

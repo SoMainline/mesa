@@ -2755,6 +2755,17 @@ bit 7 for RECTLIST (clear) when z32s8 (used for clear of depth32?  not set
 		<bitfield name="UNK_2" pos="22" type="boolean"/>
 	</reg32>
 
+	<!-- <reg32 offset="0x2001" name="RB_2D_BLEND_2001">
+		<bitfield name="SOME_PITCH" low="0" high="4" shr="8" type="uint"/>
+		<bitfield name="ARRAY_PITCH" low="12" high="27" shr="4" type="uint"/>
+	</reg32> -->
+
+	<reg32 offset="0x2001" name="RB_2D_BLEND_SIZE">
+		<bitfield name="WIDTH" low="0" high="11" type="uint"/>
+		<!-- <bitfield name="ARRAY_PITCH" low="16" high="31" shr="6" type="uint"/> -->
+		<bitfield name="ARRAY_PITCH" low="12" high="27" shr="4" type="uint"/>
+	</reg32>
+
 	<reg32 offset="0x2002" name="RB_2D_BLEND_LO"/>
 	<reg32 offset="0x2003" name="RB_2D_BLEND_HI"/>
 
