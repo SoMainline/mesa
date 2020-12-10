@@ -717,7 +717,7 @@ fd5_emit_sysmem_prep(struct fd_batch *batch)
 	/* 0x10000000 for BYPASS.. 0x7c13c080 for GMEM: */
 	fd_wfi(batch, ring);
 	OUT_PKT4(ring, REG_A5XX_RB_CCU_CNTL, 1);
-	OUT_RING(ring, 0x10000000);   /* RB_CCU_CNTL */
+	OUT_RING(ring, 0x40000000);   /* RB_CCU_CNTL */
 
 	OUT_PKT4(ring, REG_A5XX_RB_CNTL, 1);
 	OUT_RING(ring, A5XX_RB_CNTL_WIDTH(0) |
