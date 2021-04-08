@@ -1678,6 +1678,8 @@ static bool is_blit_generic_supported(struct blitter_context *blitter,
       }
    }
 
+   assert(!((src && src->target == PIPE_BUFFER) || (dst && dst->target == PIPE_BUFFER)));
+
    return true;
 }
 
